@@ -5,25 +5,29 @@ import useSWR from "swr";
 import Error from "next/error";
 import PageHeader from "@/components/PageHeader";
 
-export default function Work() {
+const Work = () => {
   const router = useRouter();
   const { workId } = router.query;
 
-  const { data: bookData, error, isLoading } = useSWR(
+  const { data, error, isLoading } = useSWR(
     workId ? `https://openlibrary.org/works/${workId}.json` : null
   );
 
-  if (!workId || isLoading) return null;
+  if (isLoading || !workId) {
+    return null; 
+  }
 
-  if (error || !bookData) {
+  if (error || !data) {
     return <Error statusCode={404} />;
   }
 
   return (
     <>
-      <PageHeader text={bookData.title} />
+      <PageHeader text={data.title} />
       <br />
-      <BookDetails book={bookData} workId={workId} />
+      <BookDetails book={data} workId={workId} />
     </>
   );
-}
+};
+
+export default Work;
